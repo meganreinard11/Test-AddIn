@@ -40,7 +40,8 @@ async function handleSelectionChanged(args) {
   try {
     await Excel.run(async (context) => {
       const wb = context.workbook;
-
+      const s = document.getElementById("status");
+      if (s) s.textContent = "Handling Selection Changed";
       // Get current selection and the target
       const sel = wb.getSelectedRange();
       const targetSheet = wb.worksheets.getItem(TARGET.sheet);
