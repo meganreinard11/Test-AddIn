@@ -12,7 +12,9 @@ Office.actions.associate("onDocumentOpen", onDocumentOpen);
 Office.onReady(() => {
   const s = document.getElementById("status");
   if (s) s.textContent = `Watching for ${TARGET.sheet}!${TARGET.address}...`;
-  await ensureSelectionWatcher();
+  Office.context.document.bindings.getByIdAsync("Overview", function (result) {
+        result.value.addHandlerAsync("bindingSelectionChanged", handleSelectionChanged);
+    });
 });
 
 // Runs when the workbook opens (Excel on the web).
