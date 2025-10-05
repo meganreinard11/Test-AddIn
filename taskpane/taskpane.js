@@ -15,13 +15,9 @@ Office.onReady((info) => {
 });
 
 let dialog = null;
-
-/**
- * This function opens a dialog that uses popup.html.
- */
 function openDialog() {
   Office.context.ui.displayDialogAsync(
-    'https://localhost:3000/popup.html',
+    'https://meganreinard11.github.io/Test-AddIn/taskpane.html',
     { height: 45, width: 55 },
 
     function (result) {
