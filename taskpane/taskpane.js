@@ -81,6 +81,7 @@ Office.onReady((info) => {
     Office.context.document.bindings.getByIdAsync("Overview", function (result) {
           result.value.addHandlerAsync("bindingSelectionChanged", handleSelectionChanged);
     });
+    await ensureSelectionWatcher();
   }
 });
 
