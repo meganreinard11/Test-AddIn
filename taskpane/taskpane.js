@@ -18,7 +18,7 @@ let dialog = null;
 function openDialog() {
   Office.context.ui.displayDialogAsync(
     'https://meganreinard11.github.io/Test-AddIn/dialogs/popup.html',
-    { height: 45, width: 55 },
+    { height: 45, width: 55, displayInIframe: true },
 
     function (result) {
       dialog = result.value;
