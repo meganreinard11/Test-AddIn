@@ -5,41 +5,29 @@
 // You can change this to a named range, e.g. { name: "OpenPaneCell" }.
 const TARGET = { sheet: "Overview", address: "B2", rowIndex: 1, columnIndex: 1 };
 
-// Map the manifest's FunctionName to this function (event-based activation).
-Office.actions.associate("onDocumentOpen", onDocumentOpen);
-
-let selectionHookAdded = false;
-
-// Runs when the workbook opens (Excel on the web).
-async function onDocumentOpen(event) {
-  try {
-    await ensureSelectionWatcher();
-  } catch (err) {
-    console.error(err);
-  } finally {
-    // REQUIRED for event-based activation.
-    event.completed();
-  }
-}
-
-async function ensureSelectionWatcher() {
-  if (selectionHookAdded) return;
-  await Excel.run(async (context) => {
-    const sheet = context.workbook.worksheets.getItem(TARGET.sheet);
+// This is called as soon as the document opens.
+// Put your startup code here.
+Office.initialize = () => {
+  // Add the event handler.
+  Excel.run(async context => {
+    let sheet = context.workbook.worksheets.getItem(TARGET.sheet);
     sheet.onSelectionChanged.add(handleSelectionChanged);
     await context.sync();
+    console.log("A handler has been registered for the onChanged event.");
   });
-  selectionHookAdded = true;
-}
+};
 
 // Fired whenever the selection changes anywhere in the workbook.
 async function handleSelectionChanged(args) {
   try {
-    document.getElementById("user-name").innerHTML = args.columnCount.toString();
+    await Excel.run(async (context) => {    
+      await context.sync();
+      document.getElementById("user-name").innerHTML = args.columnCount.toString();
+    });
   } catch (e) {
     console.error("Selection handler failed", e);
   }
-}
+};
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
@@ -47,9 +35,6 @@ Office.onReady((info) => {
     document.getElementById("open-dialog").onclick = (() => tryCatch(openDialog));
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
-    Office.context.document.bindings.getByIdAsync("Overview", function (result) {
-          result.value.addHandlerAsync("bindingSelectionChanged", handleSelectionChanged);
-    });
   }
 });
 
