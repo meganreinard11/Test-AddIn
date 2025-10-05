@@ -2,7 +2,7 @@
 
 // Choose the cell that should trigger the pane.
 // You can change this to a named range, e.g. { name: "OpenPaneCell" }.
-const TARGET = { sheet: "Overview", address: "B19" };
+const TARGET = { sheet: "Overview", address: "B2" };
 
 let selectionHookAdded = false;
 
