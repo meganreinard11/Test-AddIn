@@ -3,7 +3,10 @@
 
 // Choose the cell that should trigger the pane.
 // You can change this to a named range, e.g. { name: "OpenPaneCell" }.
-const TARGET = { sheet: "Overview", address: "B2", rowIndex: 1, columnIndex: 1 };
+const TARGET = { sheet: "Overview", address: "B2" };
+
+Office.actions.associate("showTaskpane", showTaskpane);
+Office.actions.associate("hideTaskpane", hideTaskpane);
 
 // This is called as soon as the document opens.
 // Put your startup code here.
@@ -16,24 +19,40 @@ Office.initialize = () => {
       await context.sync();
       console.log("A handler has been registered for the onChanged event.");
     } catch(err) {
-      console.log("Addition of the SelectionChanged handler failed");
+      console.error("Addition of the SelectionChanged handler failed", err);
     }
   });
 };
 
+let isTaskpaneOpen = false;
 // Fired whenever the selection changes anywhere in the workbook.
 async function handleSelectionChanged(event) {
   try {
-    await Excel.run(async (context) => {    
+    await Excel.run(async (context) => {
+      if (event.address !== TARGET.address) return;
       await context.sync();
-      console.log("Change type of event: " + event.changeType);
-      console.log("Address of event: " + event.address);
-      console.log("Source of event: " + event.source);
+      
     });
   } catch (err) {
-    console.log("Selection handler failed");
+    console.error("Selection handler failed", err);
   }
 };
+
+function showTaskpane() {
+  if (isTaskpaneOpen) return;
+  Office.addin.showAsTaskpane()
+    .then(function() {
+      isTaskpaneOpen = true;
+    });
+}
+
+function hideTaskpane() {
+  if (!isTaskpaneOpen) return;
+  Office.addin.hide()
+    .then(function() {
+      isTaskpaneOpen = false;
+    });
+}
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
