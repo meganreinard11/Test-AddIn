@@ -1,8 +1,4 @@
-/* global console, document, Excel, Office */
-/* global Office, Excel */
-
 // Choose the cell that should trigger the pane.
-// You can change this to a named range, e.g. { name: "OpenPaneCell" }.
 const TARGET = { sheet: "Overview", address: "B2" };
 
 Office.actions.associate("showTaskpane", showTaskpane);
@@ -11,31 +7,21 @@ Office.actions.associate("hideTaskpane", hideTaskpane);
 // This is called as soon as the document opens.
 // Put your startup code here.
 Office.initialize = () => {
-  // Add the event handler.
   Excel.run(async context => {
-    try {
       let sheet = context.workbook.worksheets.getItem(TARGET.sheet);
       sheet.onSelectionChanged.add(handleSelectionChanged);
       await context.sync();
-      console.log("A handler has been registered for the onChanged event.");
-    } catch(err) {
-      console.error("Addition of the SelectionChanged handler failed", err);
-    }
-  });
+      console.log("A handler has been registered for the onSelectionChanged event.");
+  }).catch(window.ValidationManager.handleError);
 };
 
 let isTaskpaneOpen = false;
 // Fired whenever the selection changes anywhere in the workbook.
 async function handleSelectionChanged(event) {
-  try {
-    await Excel.run(async (context) => {
-      if (event.address !== TARGET.address) return;
-      await context.sync();
-      
-    });
-  } catch (err) {
-    console.error("Selection handler failed", err);
-  }
+  await Excel.run(async (context) => {
+    if (event.address !== TARGET.address) return;
+    await context.sync();
+  }).catch(window.ValidationManager.handleError);
 };
 
 function showTaskpane() {
@@ -56,7 +42,6 @@ function hideTaskpane() {
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
-    // Assign event handlers and other initialization logic.
     document.getElementById("open-dialog").onclick = (() => tryCatch(openDialog));
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
