@@ -29,7 +29,8 @@ async function onDocumentOpen(event) {
 async function ensureSelectionWatcher() {
   if (selectionHookAdded) return;
   await Excel.run(async (context) => {
-    context.workbook.onSelectionChanged.add(handleSelectionChanged);
+    const context.workbook.worksheets.getItem(TARGET.sheet);
+    sheet.onSelectionChanged.add(handleSelectionChanged);
     await context.sync();
   });
   selectionHookAdded = true;
