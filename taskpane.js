@@ -12,6 +12,7 @@ Office.actions.associate("onDocumentOpen", onDocumentOpen);
 Office.onReady(() => {
   const s = document.getElementById("status");
   if (s) s.textContent = `Watching for ${TARGET.sheet}!${TARGET.address}...`;
+  await ensureSelectionWatcher();
 });
 
 // Runs when the workbook opens (Excel on the web).
@@ -41,8 +42,6 @@ async function handleSelectionChanged(args) {
   try {
     await Excel.run(async (context) => {
       const wb = context.workbook;
-      const s = document.getElementById("status");
-      if (s) s.textContent = "Handling Selection Changed";
       // Get current selection and the target
       const sel = wb.getSelectedRange();
       const targetSheet = wb.worksheets.getItem(TARGET.sheet);
