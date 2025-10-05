@@ -10,6 +10,9 @@
 // You can change this to a named range, e.g. { name: "OpenPaneCell" }.
 const TARGET = { sheet: "Overview", address: "B2", rowIndex: 1, columnIndex: 1 };
 
+// Map the manifest's FunctionName to this function (event-based activation).
+Office.actions.associate("onDocumentOpen", onDocumentOpen);
+
 let selectionHookAdded = false;
 
 // Runs when the workbook opens (Excel on the web).
@@ -37,36 +40,7 @@ async function ensureSelectionWatcher() {
 // Fired whenever the selection changes anywhere in the workbook.
 async function handleSelectionChanged(args) {
   try {
-    if ((args.columnCount == 1) && (args.rowCount == 1)) {
-      if ((rgs.startRow == TABLE.rowIndex) && (args.startColumn == TABLE.columnIndex)) {
-        await Excel.run(async (context) => {
-          const wb = context.workbook;
-          // Get current selection and the target
-          const sel = wb.getSelectedRange();
-          const targetSheet = wb.worksheets.getItem(TARGET.sheet);
-          const target = targetSheet.getRange(TARGET.address);
-          const activeSheet = wb.worksheets.getActiveWorksheet();
-    
-          target.load("address");
-          activeSheet.load("name");
-          targetSheet.load("name");
-          await context.sync();
-    
-          // Only compare ranges when you're on the right sheet
-          if (activeSheet.name !== targetSheet.name) return;
-    
-          // Intersect to see if the selected cell overlaps the target
-          const hit = target.getIntersectionOrNullObject(sel);
-          hit.load("address"); // will be null object if no hit
-          await context.sync();
-    
-          if (!hit.isNullObject) {
-            // Open the task pane (idempotent).
-            await Office.addin.showAsTaskpane();
-          }
-        });
-      }
-    }  
+    document.getElementById("user-name").innerHTML = args.columnCount;
   } catch (e) {
     console.error("Selection handler failed", e);
   }
@@ -90,7 +64,6 @@ function openDialog() {
   Office.context.ui.displayDialogAsync(
     'https://meganreinard11.github.io/Test-AddIn/dialogs/popup.html',
     { height: 45, width: 55, displayInIframe: true },
-
     function (result) {
       dialog = result.value;
       dialog.addEventHandler(Office.EventType.DialogMessageReceived, processMessage);
