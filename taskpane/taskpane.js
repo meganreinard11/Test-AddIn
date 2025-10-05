@@ -15,8 +15,8 @@ Office.initialize = () => {
       sheet.onSelectionChanged.add(handleSelectionChanged);
       await context.sync();
       console.log("A handler has been registered for the onChanged event.");
-    } catch(err) {
-      console.error("Addition of the SelectionChanged handler failed", err);
+    } catch() {
+      console.log("Addition of the SelectionChanged handler failed");
     }
   });
 };
@@ -27,11 +27,11 @@ async function handleSelectionChanged(event) {
     await Excel.run(async (context) => {    
       await context.sync();
       console.log("Change type of event: " + event.changeType);
-        onsole.log("Address of event: " + event.address);
+      console.log("Address of event: " + event.address);
       console.log("Source of event: " + event.source);
     });
-  } catch (err) {
-    console.error("Selection handler failed", err);
+  } catch () {
+    console.log("Selection handler failed");
   }
 };
 
