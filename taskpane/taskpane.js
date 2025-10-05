@@ -1,8 +1,3 @@
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
- * See LICENSE in the project root for license information.
- */
-
 /* global console, document, Excel, Office */
 /* global Office, Excel */
 
@@ -40,7 +35,7 @@ async function ensureSelectionWatcher() {
 // Fired whenever the selection changes anywhere in the workbook.
 async function handleSelectionChanged(args) {
   try {
-    document.getElementById("user-name").innerHTML = args.columnCount;
+    document.getElementById("user-name").innerHTML = args.columnCount.toString();
   } catch (e) {
     console.error("Selection handler failed", e);
   }
@@ -55,7 +50,6 @@ Office.onReady((info) => {
     Office.context.document.bindings.getByIdAsync("Overview", function (result) {
           result.value.addHandlerAsync("bindingSelectionChanged", handleSelectionChanged);
     });
-    await ensureSelectionWatcher();
   }
 });
 
