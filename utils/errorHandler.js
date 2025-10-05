@@ -7,7 +7,7 @@
  *
  * Exports:
  *   - getEnvFlag()
- *   - handle(error, context?)
+ *   - handleError(error, context?)
  *   - tryWrap(action, workFn(env), context?)
  */
 
@@ -23,10 +23,9 @@ var DIAG_HEADERS = ["Timestamp","Action","Message","Code","Location","Statement"
  * NOTE: This function calls Excel.run internally to read the env (and to log diagnostics),
  * so it's best to call it OUTSIDE any active Excel.run block if possible.
  */
-async function handle(err, context) {
+async function handleError(err, context) {
   context = context || {};
-  var offErr = toOfficeError(err);
-  var safeMessage = typeof context.userMessage === "string" ? context.userMessage : "Something went wrong. Please try again.";
+  var offErr = toOfficeError(err), safeMessage = (typeof context.userMessage === "string" ? context.userMessage : "Something went wrong. Please try again.");
   console.error("[" + (context.action || "Operation") + "] " + (offErr.message || "Error"), offErr);
   var env = await getEnvFlag();
   if (env && env.debug) {
@@ -49,12 +48,10 @@ async function getEnvFlag() {
   try {
     return await Excel.run(async function (ctx) {
       try {
-        var ws = ctx.workbook.worksheets.getItem(SETTINGS_SHEET);
-        var rng = ws.getRange(SETTINGS_FLAG_RANGE);
+        var ws = ctx.workbook.worksheets.getItem(SETTINGS_SHEET), rng = ws.getRange(SETTINGS_FLAG_RANGE);
         rng.load("values");
         await ctx.sync();
-        var raw = rng.values && rng.values[0] ? rng.values[0][0] : undefined;
-        var debug = coerceBoolean(raw);
+        var raw = (rng.values && rng.values[0] ? rng.values[0][0] : undefined), debug = coerceBoolean(raw);
         return { debug: debug };
       } catch (err) {
         if (isItemNotFound(err)) {
@@ -80,7 +77,7 @@ async function tryWrap(action, workFn, context) {
   try {
     return await workFn(env); // you can still use env here if helpful
   } catch (err) {
-    await handle(err, merge({ action: action }, context || {}));  // fixed: call the correct handler
+    await handleError(err, merge({ action: action }, context || {}));  // fixed: call the correct handler
     return undefined;
   }
 }
