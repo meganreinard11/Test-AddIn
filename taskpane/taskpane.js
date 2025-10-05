@@ -17,7 +17,7 @@ Office.onReady((info) => {
 let dialog = null;
 function openDialog() {
   Office.context.ui.displayDialogAsync(
-    'https://meganreinard11.github.io/Test-AddIn/dialogs/popups.html',
+    'https://meganreinard11.github.io/Test-AddIn/dialogs/popup.html',
     { height: 45, width: 55 },
 
     function (result) {
