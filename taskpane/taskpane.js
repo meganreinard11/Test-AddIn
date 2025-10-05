@@ -10,22 +10,28 @@ const TARGET = { sheet: "Overview", address: "B2", rowIndex: 1, columnIndex: 1 }
 Office.initialize = () => {
   // Add the event handler.
   Excel.run(async context => {
-    let sheet = context.workbook.worksheets.getItem(TARGET.sheet);
-    sheet.onSelectionChanged.add(handleSelectionChanged);
-    await context.sync();
-    console.log("A handler has been registered for the onChanged event.");
+    try {
+      let sheet = context.workbook.worksheets.getItem(TARGET.sheet);
+      sheet.onSelectionChanged.add(handleSelectionChanged);
+      await context.sync();
+      console.log("A handler has been registered for the onChanged event.");
+    } catch(err) {
+      console.error("Addition of the SelectionChanged handler failed", err);
+    }
   });
 };
 
 // Fired whenever the selection changes anywhere in the workbook.
-async function handleSelectionChanged(args) {
+async function handleSelectionChanged(event) {
   try {
     await Excel.run(async (context) => {    
       await context.sync();
-      document.getElementById("user-name").innerHTML = args.columnCount.toString();
+      console.log("Change type of event: " + event.changeType);
+        onsole.log("Address of event: " + event.address);
+      console.log("Source of event: " + event.source);
     });
-  } catch (e) {
-    console.error("Selection handler failed", e);
+  } catch (err) {
+    console.error("Selection handler failed", err);
   }
 };
 
@@ -63,8 +69,8 @@ function processMessage(arg) {
 async function tryCatch(callback) {
   try {
       await callback();
-  } catch (error) {
+  } catch (err) {
       // Note: In a production add-in, you'd want to notify the user through your add-in's UI.
-      console.error(error);
+      console.error(err);
   }
 }
