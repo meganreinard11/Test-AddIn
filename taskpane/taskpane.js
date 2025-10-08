@@ -1,8 +1,8 @@
 // Choose the cell that should trigger the pane.
 const TARGET = { sheet: "Overview", address: "B2" };
 
-Office.actions.associate("showTaskpane", showTaskpane);
-Office.actions.associate("hideTaskpane", hideTaskpane);
+Office.actions.associate("showTaskpane", showPane);
+Office.actions.associate("hide", hidePane);
 
 // This is called as soon as the document opens.
 // Put your startup code here.
