@@ -24,7 +24,7 @@ async function handleSelectionChanged(event) {
   }).catch(window.ValidationManager.handleError);
 };
 
-function showTaskpane() {
+function showPane() {
   if (isTaskpaneOpen) return;
   Office.addin.showAsTaskpane()
     .then(function() {
@@ -32,7 +32,7 @@ function showTaskpane() {
     });
 }
 
-function hideTaskpane() {
+function hidePane() {
   if (!isTaskpaneOpen) return;
   Office.addin.hide()
     .then(function() {
